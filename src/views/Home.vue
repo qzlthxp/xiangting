@@ -19,17 +19,25 @@
     <p>
       {{ formatDuration(currentTime * 1000) }} / {{ formatDuration(duration) }}
     </p>
-    <ul class="lrc-ctn" @click="changeCurTimeByLrc($event)">
-      <Loading v-show="!Object.keys(ric).length" />
-      <li class="ric" v-for="(lrc, key) in ric" :key="key" :data-timeline="key">
-        {{ lrc }}
-      </li>
-    </ul>
+
+    <div class="lrc-box">
+      <ul class="lrc-ctn" @click="changeCurTimeByLrc($event)">
+        <Loading v-show="!Object.keys(ric).length" />
+        <li
+          class="ric"
+          v-for="(lrc, key) in ric"
+          :key="key"
+          :data-timeline="key"
+        >
+          {{ lrc }}
+        </li>
+      </ul>
+    </div>
 
     <Loading v-show="!result.length" />
     <ul v-show="result.length">
       <li
-        :class="[{ active: item.id === songId }]"
+        :style="`${item.id === songId ? 'color: #2ecc71' : ''}`"
         v-for="item in result"
         :key="item.id"
         @click="changeMusic(item)"
@@ -44,8 +52,7 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
 import { formatDuration, formatLrc } from '@/utils'
-import { lyric } from '@/api'
-import { info } from '@/utils/songs'
+import { lyric, topSong } from '@/api'
 import Loading from '@/components/Loading.vue'
 
 const result = ref<any>([])
@@ -95,17 +102,15 @@ const addLrcHighLight = () => {
   if (dataTimeline) {
     const ricDom = document.querySelector(
       `.ric[data-timeline="${dataTimeline}"]`
-    )
-    if (!ricDom?.classList.contains('active')) {
+    ) as HTMLLIElement
+    if (!ricDom.classList.contains('active')) {
       removeLrcHighLight()
-      ricDom?.classList.add('active')
-      const offTop = (ricDom as HTMLLIElement).offsetTop
-      const height = (ricDom as HTMLLIElement).clientHeight / 2
-      const dy = offTop - document.querySelector('.lrc-ctn')!.clientHeight / 2
-      let scrollTop = dy + height
-      window.requestAnimationFrame(() => {
-        document.querySelector('.lrc-ctn')!.scrollTop = scrollTop
-      })
+      ricDom.classList.add('active')
+      const parentNode = ricDom.closest('.lrc-ctn') as HTMLUListElement
+      const boxNode = parentNode.closest('.lrc-box') as HTMLDivElement
+      const dy =
+        ricDom.offsetTop - boxNode.clientHeight / 2 + ricDom.clientHeight / 2
+      boxNode.scrollTop = dy
     }
   }
 }
@@ -167,8 +172,9 @@ const downProgressBtn = (e: MouseEvent) => {
 
 onMounted(() => {
   async function getSong() {
+    const res = (await topSong()) as any
     result.value.push(
-      ...info.songs.map((song: any) => ({
+      ...res.songs.map((song: any) => ({
         ...song,
         url: `https://music.163.com/song/media/outer/url?id=${song.id}.mp3 `,
         duration: formatDuration(song.dt)
@@ -183,19 +189,21 @@ onMounted(() => {
 .home {
   padding: 0 50px;
 }
+.lrc-box {
+  padding-bottom: 160px;
+  width: 50%;
+  height: 500px;
+  position: relative;
+  overflow: auto;
+}
 ul {
   list-style: none;
   width: 100%;
-  height: 300px;
+  height: auto;
   overflow: auto;
-  position: relative;
-  &.lrc-ctn {
-    height: 500px;
-  }
   li {
     width: 300px;
     padding: 10px;
-    transition: 0.25s ease-in;
     cursor: pointer;
     span {
       display: inline-block;
@@ -211,24 +219,28 @@ ul {
       width: 50px;
     }
     &.ric {
-      margin: 10px 0;
+      margin: 0 0 10px;
       padding: 10px;
       width: auto;
       height: 80px;
       border-radius: 10px;
-      font-size: 30px;
       line-height: 60px;
       text-align: left;
-    }
-    &:hover {
-      color: #2ecc71;
+      &.active {
+        transition: 0.2s cubic-bezier(0.5, 1, 0.89, 1);
+        color: #2ecc71;
+        font-weight: bold;
+        font-size: 30px;
+      }
+      &:hover {
+        color: #2ecc71;
+      }
+      &:last-child {
+        margin: 0;
+      }
     }
     &:nth-child(even) {
       background-color: #f8f8f8;
-    }
-    &.active {
-      color: #2ecc71;
-      font-weight: bold;
     }
   }
 }
@@ -258,6 +270,7 @@ ul {
   z-index: 2;
 }
 .progress-btn {
+  user-select: none;
   position: absolute;
   top: -4px;
   right: -9px;
@@ -267,7 +280,6 @@ ul {
   border: 1px solid rgba(0, 0, 0, 0.1);
   background-color: #fff;
   z-index: 4;
-  cursor: pointer;
   &::before {
     content: '';
     position: absolute;
