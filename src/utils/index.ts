@@ -21,7 +21,7 @@ export function formatLrc(lyric: string) {
     timeArr?.forEach((item, index) => {
       second += 60 ** index * parseFloat(item)
     })
-    obj[Math.round(second)] = data.replace(/\[.*\]/g, '')
+    obj[Math.round(second)] = data.replace(/\[.*\]/g, '') || '● ● ●'
   })
   return obj
 }
