@@ -25,3 +25,24 @@ export function formatLrc(lyric: string) {
   })
   return obj
 }
+
+export function debounce(fn: any, delay = 1000, immediate = false) {
+  let timer: any = null
+  let flag = true
+  return function (this: any, ...args: any[]): void {
+    if (timer) clearTimeout(timer)
+    if (immediate) {
+      if (flag) {
+        fn.apply(this, args)
+        flag = false
+        timer = setTimeout(() => {
+          flag = true
+        }, delay)
+      }
+    } else {
+      timer = setTimeout(() => {
+        fn.apply(this, args)
+      }, delay)
+    }
+  }
+}

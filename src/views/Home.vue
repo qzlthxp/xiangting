@@ -20,7 +20,7 @@
       {{ formatDuration(currentTime * 1000) }} / {{ formatDuration(duration) }}
     </p>
 
-    <div class="lrc-box">
+    <div class="lrc-box" @wheel="lrcBoxScroll">
       <ul class="lrc-ctn" @click="changeCurTimeByLrc($event)">
         <Loading v-show="!Object.keys(ric).length" />
         <li
@@ -66,6 +66,8 @@ const duration = ref(0)
 const readyPlay = ref(false)
 const ric = ref<{ [Key: string]: string }>({})
 const isMoving = ref(false)
+const isScrolling = ref(false)
+let timer: any = null
 
 async function getLyric(params: { id: number | string }) {
   const res = (await lyric(params)) as any
@@ -93,6 +95,14 @@ const removeLrcHighLight = () => {
   })
 }
 
+const lrcBoxScroll = () => {
+  if (timer) clearTimeout(timer)
+  isScrolling.value = true
+  timer = setTimeout(() => {
+    isScrolling.value = false
+  }, 1000)
+}
+
 const addLrcHighLight = () => {
   const dataTimeline = Object.keys(ric.value)
     .filter((item) => {
@@ -106,6 +116,7 @@ const addLrcHighLight = () => {
     if (!ricDom.classList.contains('active')) {
       removeLrcHighLight()
       ricDom.classList.add('active')
+      if (isScrolling.value) return
       const parentNode = ricDom.closest('.lrc-ctn') as HTMLUListElement
       const boxNode = parentNode.closest('.lrc-box') as HTMLDivElement
       const dy =
@@ -191,10 +202,13 @@ onMounted(() => {
 }
 .lrc-box {
   padding-bottom: 160px;
-  width: 50%;
+  width: 60%;
   height: 500px;
   position: relative;
   overflow: auto;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 ul {
   list-style: none;
@@ -230,7 +244,7 @@ ul {
         transition: 0.2s cubic-bezier(0.5, 1, 0.89, 1);
         color: #2ecc71;
         font-weight: bold;
-        font-size: 30px;
+        font-size: 28px;
       }
       &:hover {
         color: #2ecc71;
