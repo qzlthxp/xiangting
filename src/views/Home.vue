@@ -82,7 +82,7 @@ async function getLyric(params: { id: number | string }) {
   const res = (await lyric(params)) as any
   ric.value = formatLrc(res.lrc.lyric)
   if (Object.keys(ric.value).length && readyPlay.value) {
-    audio.value?.play()
+    audio.value!.play()
   }
 }
 
