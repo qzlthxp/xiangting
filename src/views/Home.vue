@@ -1,51 +1,70 @@
 <template>
   <div class="home">
-    <audio
-      ref="audio"
-      src=""
-      controls
-      preload="metadata"
-      @loadedmetadata="loadedmetadata"
-      @timeupdate="timeupdate"
-    ></audio>
+    <div class="controls">
+      <div class="input-box">
+        <label for="singerId"
+          >歌手id
+          <input id="singerId" type="text" v-model="singerId" />
+        </label>
+        <button @click="getSong(singerId)">获取歌手歌曲</button>
+      </div>
+      <audio
+        ref="audio"
+        src=""
+        controls
+        preload="metadata"
+        @loadedmetadata="loadedmetadata"
+        @timeupdate="timeupdate"
+      ></audio>
 
-    <div ref="progress" class="progress" @click="changeCurTime">
-      <div ref="bufferedProgress" class="buffered-progress"></div>
-      <div ref="playProgress" class="play-progress" @click.stop="changeCurTime">
-        <div class="progress-btn" @mousedown="downProgressBtn"></div>
+      <div ref="progress" class="progress" @click="changeCurTime">
+        <div ref="bufferedProgress" class="buffered-progress"></div>
+        <div
+          ref="playProgress"
+          class="play-progress"
+          @click.stop="changeCurTime"
+        >
+          <div class="progress-btn" @mousedown="downProgressBtn"></div>
+        </div>
+      </div>
+
+      <p class="time">
+        {{ formatDuration(currentTime * 1000) }} /
+        {{ formatDuration(duration) }}
+      </p>
+    </div>
+
+    <div class="song-container">
+      <div class="songs-box">
+        <Loading v-show="!result.length" />
+        <ul class="songs" v-show="result.length">
+          <li
+            class="song"
+            :style="`${item.id === songId ? 'color: #31c27c' : ''}`"
+            v-for="item in result"
+            :key="item.id"
+            @click="changeMusic(item)"
+          >
+            <span class="name">{{ item.name }}</span>
+            <span class="dt">{{ item.duration }}</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="lrc-box" @wheel="lrcBoxScroll">
+        <ul class="lrc-ctn" @click="changeCurTimeByLrc($event)">
+          <Loading v-show="!Object.keys(ric).length" />
+          <li
+            class="ric"
+            v-for="(lrc, key) in ric"
+            :key="key"
+            :data-timeline="key"
+          >
+            {{ lrc }}
+          </li>
+        </ul>
       </div>
     </div>
-
-    <p>
-      {{ formatDuration(currentTime * 1000) }} / {{ formatDuration(duration) }}
-    </p>
-
-    <div class="lrc-box" @wheel="lrcBoxScroll">
-      <ul class="lrc-ctn" @click="changeCurTimeByLrc($event)">
-        <Loading v-show="!Object.keys(ric).length" />
-        <li
-          class="ric"
-          v-for="(lrc, key) in ric"
-          :key="key"
-          :data-timeline="key"
-        >
-          {{ lrc }}
-        </li>
-      </ul>
-    </div>
-
-    <Loading v-show="!result.length" />
-    <ul v-show="result.length">
-      <li
-        :style="`${item.id === songId ? 'color: #31c27c' : ''}`"
-        v-for="item in result"
-        :key="item.id"
-        @click="changeMusic(item)"
-      >
-        <span class="name">{{ item.name }}</span>
-        <span class="dt">{{ item.duration }}</span>
-      </li>
-    </ul>
   </div>
 </template>
 
@@ -54,6 +73,8 @@ import { ref, onMounted } from 'vue'
 import { formatDuration, formatLrc } from '@/utils'
 import { lyric, topSong } from '@/api'
 import Loading from '@/components/Loading.vue'
+
+const singerId = ref('9606')
 
 const result = ref<any>([])
 const songId = ref<null | number>(null)
@@ -201,24 +222,48 @@ const downProgressBtn = (e: MouseEvent) => {
   }
 }
 
+async function getSong(id: string) {
+  result.value.length = 0
+  const res = (await topSong(id)) as any
+  result.value.push(
+    ...res.songs.map((song: any) => ({
+      ...song,
+      url: `https://music.163.com/song/media/outer/url?id=${song.id}.mp3 `,
+      duration: formatDuration(song.dt)
+    }))
+  )
+}
+
 onMounted(() => {
-  async function getSong() {
-    const res = (await topSong()) as any
-    result.value.push(
-      ...res.songs.map((song: any) => ({
-        ...song,
-        url: `https://music.163.com/song/media/outer/url?id=${song.id}.mp3 `,
-        duration: formatDuration(song.dt)
-      }))
-    )
-  }
-  getSong()
+  getSong(singerId.value)
 })
 </script>
 
 <style lang="scss" scoped>
 .home {
   padding: 0 50px;
+}
+.controls {
+  margin-bottom: 50px;
+  display: flex;
+  align-items: center;
+  .input-box,
+  audio,
+  .progress {
+    margin-right: 50px;
+  }
+}
+.song-container {
+  width: 100%;
+  height: 500px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.songs-box {
+  width: 300px;
+  height: 500px;
+  overflow: auto;
 }
 .lrc-box {
   padding: 10px 10px 290px;
@@ -239,21 +284,23 @@ ul {
   height: auto;
   overflow: auto;
   li {
-    width: 300px;
     padding: 10px;
     cursor: pointer;
-    span {
-      display: inline-block;
-    }
-    .name {
-      width: 200px;
-      text-align: left;
-      text-overflow: ellipsis;
-      overflow: hidden;
-      white-space: nowrap;
-    }
-    .dt {
-      width: 50px;
+    &.song {
+      width: 300px;
+      span {
+        display: inline-block;
+      }
+      .name {
+        width: 200px;
+        text-align: left;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+      .dt {
+        width: 50px;
+      }
     }
     &.ric {
       margin: 0 0 10px;

@@ -1,8 +1,8 @@
 import request from '../utils/request'
 
-export function topSong() {
+export function topSong(id: string) {
   return request({
-    url: '/artist/top/song?id=9606',
+    url: `/artist/top/song?id=${id}`,
     method: 'get'
   })
 }
