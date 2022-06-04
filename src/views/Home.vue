@@ -221,7 +221,7 @@ onMounted(() => {
   padding: 0 50px;
 }
 .lrc-box {
-  padding: 10px 10px 200px;
+  padding: 10px 10px 290px;
   width: 60%;
   height: 500px;
   border-radius: 5px;
@@ -264,7 +264,7 @@ ul {
       line-height: 60px;
       text-align: left;
       &.active {
-        transition: 0.2s cubic-bezier(0.5, 1, 0.89, 1);
+        transition: font-size 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         color: #31c27c;
         font-weight: bold;
         font-size: 28px;
