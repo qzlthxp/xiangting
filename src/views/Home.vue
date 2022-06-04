@@ -179,7 +179,7 @@ const changeCurTimeByLrc = (e: MouseEvent) => {
     Number((e.target as HTMLLIElement).dataset.timeline) || 0
 }
 
-// 按下进度指示按钮
+// 按下进度指示按钮拖动修改进度
 const downProgressBtn = (e: MouseEvent) => {
   const dx = e.clientX
   const width = playProgress.value!.clientWidth
