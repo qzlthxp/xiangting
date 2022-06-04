@@ -278,6 +278,9 @@ onMounted(() => {
   margin-left: 50px;
   padding: 10px 10px 290px;
   flex: 1;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 ul {
   list-style: none;
