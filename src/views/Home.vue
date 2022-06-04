@@ -3,7 +3,7 @@
     <div class="controls">
       <div class="input-box">
         <label for="singerId"
-          >歌手id
+          >歌手id：
           <input id="singerId" type="text" v-model="singerId" />
         </label>
         <button @click="getSong(singerId)">获取歌手歌曲</button>
@@ -260,54 +260,51 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
 }
-.songs-box {
-  width: 300px;
-  height: 500px;
-  overflow: auto;
-}
+.songs-box,
 .lrc-box {
-  padding: 10px 10px 290px;
-  width: 60%;
-  height: 500px;
-  border-radius: 5px;
+  height: 100%;
   box-shadow: 0 0 10px #dfe6e9;
+  border-radius: 5px;
   position: relative;
   overflow: auto;
   scroll-behavior: smooth;
-  &::-webkit-scrollbar {
-    display: none;
-  }
+}
+.songs-box {
+  padding: 10px;
+  width: 350px;
+  overflow: auto;
+}
+.lrc-box {
+  margin-left: 50px;
+  padding: 10px 10px 290px;
+  flex: 1;
 }
 ul {
   list-style: none;
   width: 100%;
   height: auto;
-  overflow: auto;
   li {
+    margin-bottom: 10px;
     padding: 10px;
+    width: 100%;
+    background-color: #f8f8f8;
+    border-radius: 10px;
     cursor: pointer;
     &.song {
-      width: 300px;
-      span {
-        display: inline-block;
-      }
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       .name {
-        width: 200px;
+        max-width: 150px;
         text-align: left;
         text-overflow: ellipsis;
         overflow: hidden;
         white-space: nowrap;
       }
-      .dt {
-        width: 50px;
-      }
     }
     &.ric {
-      margin: 0 0 10px;
-      padding: 10px;
       width: 100%;
       height: 80px;
-      border-radius: 10px;
       line-height: 60px;
       text-align: left;
       &.active {
@@ -316,15 +313,15 @@ ul {
         font-weight: bold;
         font-size: 28px;
       }
-      &:hover {
-        color: #31c27c;
-      }
-      &:last-child {
-        margin: 0;
+      &:nth-child(odd) {
+        background-color: #fff;
       }
     }
-    &:nth-child(even) {
-      background-color: #f8f8f8;
+    &:last-child {
+      margin: 0;
+    }
+    &:hover {
+      color: #31c27c;
     }
   }
 }
