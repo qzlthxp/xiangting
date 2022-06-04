@@ -37,7 +37,7 @@
     <Loading v-show="!result.length" />
     <ul v-show="result.length">
       <li
-        :style="`${item.id === songId ? 'color: #2ecc71' : ''}`"
+        :style="`${item.id === songId ? 'color: #31c27c' : ''}`"
         v-for="item in result"
         :key="item.id"
         @click="changeMusic(item)"
@@ -100,13 +100,6 @@ const loadedmetadata = () => {
   readyPlay.value = true
 }
 
-// 移除歌词高亮
-const removeLrcHighLight = () => {
-  document.querySelectorAll('.ric').forEach((el: Element) => {
-    el.classList.remove('active')
-  })
-}
-
 // 歌词滚动
 const lrcBoxScroll = () => {
   if (timer) clearTimeout(timer)
@@ -114,6 +107,13 @@ const lrcBoxScroll = () => {
   timer = setTimeout(() => {
     isScrolling.value = false
   }, 1000)
+}
+
+// 移除歌词高亮
+const removeLrcHighLight = () => {
+  document.querySelectorAll('.ric').forEach((el: Element) => {
+    el.classList.remove('active')
+  })
 }
 
 // 歌词高亮
@@ -133,9 +133,10 @@ const addLrcHighLight = () => {
       if (isScrolling.value) return
       const parentNode = ricDom.closest('.lrc-ctn') as HTMLUListElement
       const boxNode = parentNode.closest('.lrc-box') as HTMLDivElement
+      // 当前需要高亮歌词距离父容器顶部的距离，减去父容器一半高度，在加上自身一半的高度。滚动到父元素垂直居中的位置。
       const dy =
         ricDom.offsetTop - boxNode.clientHeight / 2 + ricDom.clientHeight / 2
-      boxNode.scrollTop = dy
+      boxNode.scrollTop = dy > 0 ? dy : 0
     }
   }
 }
@@ -220,11 +221,14 @@ onMounted(() => {
   padding: 0 50px;
 }
 .lrc-box {
-  padding-bottom: 160px;
+  padding: 10px 10px 200px;
   width: 60%;
   height: 500px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px #dfe6e9;
   position: relative;
   overflow: auto;
+  scroll-behavior: smooth;
   &::-webkit-scrollbar {
     display: none;
   }
@@ -254,19 +258,19 @@ ul {
     &.ric {
       margin: 0 0 10px;
       padding: 10px;
-      width: auto;
+      width: 100%;
       height: 80px;
       border-radius: 10px;
       line-height: 60px;
       text-align: left;
       &.active {
         transition: 0.2s cubic-bezier(0.5, 1, 0.89, 1);
-        color: #2ecc71;
+        color: #31c27c;
         font-weight: bold;
         font-size: 28px;
       }
       &:hover {
-        color: #2ecc71;
+        color: #31c27c;
       }
       &:last-child {
         margin: 0;
@@ -299,7 +303,7 @@ ul {
 }
 .play-progress {
   width: 0;
-  background-color: #2ecc71;
+  background-color: #31c27c;
   z-index: 2;
 }
 .progress-btn {
@@ -322,7 +326,7 @@ ul {
     width: 10px;
     height: 10px;
     border-radius: 100%;
-    background-color: #2ecc71;
+    background-color: #31c27c;
   }
 }
 </style>
