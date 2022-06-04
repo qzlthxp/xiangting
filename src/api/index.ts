@@ -2,7 +2,7 @@ import request from '../utils/request'
 
 export function topSong() {
   return request({
-    url: '/artist/top/song?id=5781',
+    url: '/artist/top/song?id=9606',
     method: 'get'
   })
 }

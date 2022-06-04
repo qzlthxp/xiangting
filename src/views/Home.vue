@@ -59,16 +59,25 @@ const result = ref<any>([])
 const songId = ref<null | number>(null)
 const audio = ref<HTMLAudioElement>()
 const progress = ref<HTMLDivElement>()
+
+// 正在播放的进度
 const playProgress = ref<HTMLDivElement>()
+// 缓冲的进度
 const bufferedProgress = ref<HTMLDivElement>()
+// 播放的当前位置
 const currentTime = ref(0)
+// 总时长
 const duration = ref(0)
 const readyPlay = ref(false)
+// 歌词
 const ric = ref<{ [Key: string]: string }>({})
+// 正在拖动进度条
 const isMoving = ref(false)
+// 正在滚动歌词
 const isScrolling = ref(false)
 let timer: any = null
 
+// 根据歌曲id获取歌词
 async function getLyric(params: { id: number | string }) {
   const res = (await lyric(params)) as any
   ric.value = formatLrc(res.lrc.lyric)
@@ -77,6 +86,7 @@ async function getLyric(params: { id: number | string }) {
   }
 }
 
+// 点击播放歌曲
 const changeMusic = (item: any) => {
   ric.value = {}
   songId.value = item.id
@@ -85,16 +95,19 @@ const changeMusic = (item: any) => {
   getLyric({ id: item.id })
 }
 
+// 歌曲元数据加载完毕
 const loadedmetadata = () => {
   readyPlay.value = true
 }
 
+// 移除歌词高亮
 const removeLrcHighLight = () => {
   document.querySelectorAll('.ric').forEach((el: Element) => {
     el.classList.remove('active')
   })
 }
 
+// 歌词滚动
 const lrcBoxScroll = () => {
   if (timer) clearTimeout(timer)
   isScrolling.value = true
@@ -103,6 +116,7 @@ const lrcBoxScroll = () => {
   }, 1000)
 }
 
+// 歌词高亮
 const addLrcHighLight = () => {
   const dataTimeline = Object.keys(ric.value)
     .filter((item) => {
@@ -126,6 +140,7 @@ const addLrcHighLight = () => {
   }
 }
 
+// 修改缓存进度条
 const changeBufferedWidth = () => {
   const bufferedWidth =
     audio.value!.buffered.length > 0
@@ -136,6 +151,7 @@ const changeBufferedWidth = () => {
   bufferedProgress.value!.style.width = Math.round(bufferedWidth) + '%'
 }
 
+// 修改播放进度条
 const changePlayWidth = () => {
   const width = (audio.value!.currentTime / audio.value!.duration) * 100 || 0
   playProgress.value!.style.width = Math.round(width) + '%'
@@ -149,6 +165,7 @@ const timeupdate = () => {
   changePlayWidth()
 }
 
+// 点击进度条修改播放位置
 const changeCurTime = (e: MouseEvent) => {
   if (audio.value!.currentSrc && !isMoving.value) {
     audio.value!.currentTime =
@@ -156,11 +173,13 @@ const changeCurTime = (e: MouseEvent) => {
   }
 }
 
+// 点击歌词修改播放位置
 const changeCurTimeByLrc = (e: MouseEvent) => {
   audio.value!.currentTime =
     Number((e.target as HTMLLIElement).dataset.timeline) || 0
 }
 
+// 按下进度指示按钮
 const downProgressBtn = (e: MouseEvent) => {
   const dx = e.clientX
   const width = playProgress.value!.clientWidth
