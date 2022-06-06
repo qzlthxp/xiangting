@@ -15,6 +15,7 @@
         preload="metadata"
         @loadedmetadata="loadedmetadata"
         @timeupdate="timeupdate"
+        @ended="nextSong"
       ></audio>
 
       <div ref="progress" class="progress" @click="changeCurTime">
@@ -114,6 +115,21 @@ async function getLyric(params: { id: number | string }) {
   if (Object.keys(ric.value).length && readyPlay.value) {
     audio.value!.play()
   }
+}
+
+// 当前歌曲播放完毕自动播放
+const nextSong = () => {
+  let song: any = result.value?.[0]
+  for (let i = 0; i < result.value.length; i++) {
+    if (result.value[i].id === songId.value) {
+      if (i !== result.value.length - 1) {
+        song = result.value?.[i + 1]
+        break
+      }
+    }
+  }
+  songId.value = song.id
+  changeMusic(song)
 }
 
 // 点击播放歌曲
