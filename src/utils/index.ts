@@ -11,7 +11,7 @@ export function formatLrc(lyric: string) {
   } = {}
   const lyricArray = lyric.split('\n').filter(Boolean)
   lyricArray.forEach((item: string) => {
-    const data = decodeURIComponent(item).replace(/\\n/g, '')
+    const data = decodeURIComponent(item)
     const time = data.match(/\[.*\]/g)
     const timeArr = time?.[0]
       .slice(1, time?.[0].length - 1)

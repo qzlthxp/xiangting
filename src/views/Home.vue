@@ -45,7 +45,7 @@
             :key="item.id"
             @click="changeMusic(item)"
           >
-            <span class="name">{{ item.name }}</span>
+            <span class="name" :title="item.name">{{ item.name }}</span>
             <span class="dt">{{ item.duration }}</span>
           </li>
         </ul>
@@ -74,7 +74,16 @@ import { formatDuration, formatLrc } from '@/utils'
 import { lyric, topSong } from '@/api'
 import Loading from '@/components/Loading.vue'
 
-const singerId = ref('9606')
+const singerId = ref('')
+const singerIds = [
+  '9606',
+  '32980337',
+  '3684',
+  '35531',
+  '2116',
+  '5771',
+  '28863695'
+]
 
 const result = ref<any>([])
 const songId = ref<null | number>(null)
@@ -235,6 +244,7 @@ async function getSong(id: string) {
 }
 
 onMounted(() => {
+  singerId.value = singerIds[Math.floor(Math.random() * singerIds.length)]
   getSong(singerId.value)
 })
 </script>
