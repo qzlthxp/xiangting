@@ -1,5 +1,6 @@
 <template>
   <div class="home">
+    <p class="singer-name">歌手：{{ singerName }}</p>
     <div class="controls">
       <div class="input-box">
         <label for="singerId"
@@ -76,6 +77,7 @@ import { lyric, topSong } from '@/api'
 import Loading from '@/components/Loading.vue'
 
 const singerId = ref('')
+const singerName = ref('')
 const singerIds = [
   '2116',
   '3684',
@@ -306,6 +308,7 @@ const downProgressBtn = (e: MouseEvent) => {
 async function getSong(id: string) {
   result.value.length = 0
   const res = (await topSong(id)) as any
+  singerName.value = res.songs[0].ar[0].name
   result.value.push(
     ...res.songs.map((song: any) => ({
       ...song,
