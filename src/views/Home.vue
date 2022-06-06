@@ -54,7 +54,7 @@
 
       <div class="lrc-box" @wheel="lrcBoxScroll">
         <ul class="lrc-ctn" @click="changeCurTimeByLrc($event)">
-          <Loading v-show="!Object.keys(ric).length" />
+          <Loading v-show="!Object.keys(ric).length" :msg="loadingMsg" />
           <li
             class="ric"
             v-for="(lrc, key) in ric"
@@ -77,14 +77,69 @@ import Loading from '@/components/Loading.vue'
 
 const singerId = ref('')
 const singerIds = [
-  '9606',
-  '32980337',
-  '3684',
-  '35531',
   '2116',
+  '3684',
+  '9606',
+  '5781',
+  '1143033',
+  '12138269',
+  '7763',
+  '12631485',
   '5771',
-  '28863695'
+  '4292',
+  '35531',
+  '31376161',
+  '6472',
+  '6452',
+  '11127',
+  '12002248',
+  '7214',
+  '1198123',
+  '8926',
+  '2843',
+  '12676697',
+  '14312549',
+  '31165848',
+  '36032190',
+  '9940',
+  '44266',
+  '1197168',
+  '36181946',
+  '12429072',
+  '31309410',
+  '6460',
+  '32399227',
+  '780003',
+  '14714082',
+  '7424',
+  '1132392',
+  '1050282',
+  '12852319',
+  '9621',
+  '33435854',
+  '5538',
+  '10204',
+  '1019154',
+  '12276375',
+  '1030001',
+  '9272',
+  '3699',
+  '122455',
+  '35187624',
+  '7063',
+  '29588305',
+  '893484',
+  '784257',
+  '1007170',
+  '10562',
+  '861777',
+  '12156137',
+  '12085562',
+  '159300',
+  '1045123'
 ]
+
+const loadingMsg = ref('请先选择左侧歌曲')
 
 const result = ref<any>([])
 const songId = ref<null | number>(null)
@@ -135,6 +190,7 @@ const nextSong = () => {
 // 点击播放歌曲
 const changeMusic = (item: any) => {
   ric.value = {}
+  loadingMsg.value = ''
   songId.value = item.id
   audio.value!.src = item.url
   duration.value = item.dt
@@ -267,7 +323,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .home {
-  padding: 0 50px;
+  padding: 50px;
 }
 .controls {
   margin-bottom: 50px;
