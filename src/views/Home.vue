@@ -67,6 +67,15 @@
         </ul>
       </div>
     </div>
+
+    <a
+      title="github"
+      class="github-link"
+      href="https://github.com/qzlthxp/xiangting"
+      target="_blank"
+    >
+      <img src="../assets/github-round.png" alt="github" />
+    </a>
   </div>
 </template>
 
@@ -327,6 +336,7 @@ onMounted(() => {
 <style lang="scss" scoped>
 .home {
   padding: 50px;
+  position: relative;
 }
 .controls {
   margin-bottom: 50px;
@@ -460,5 +470,17 @@ ul {
     border-radius: 100%;
     background-color: #31c27c;
   }
+}
+.github-link {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+}
+.github-link img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 </style>
